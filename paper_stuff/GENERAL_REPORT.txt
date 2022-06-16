@@ -1,0 +1,129 @@
+###### ---------------------------------------> FIBROSIS 36m <---------------------------------- #######
+
+#If we sort by balanced accuracy, we have **ETDRS** && **cristalin_ETDRS_SNPs** at the top balanced accuracies
+#If we sort by score, we have **foveolar_cristalin_ETDRS** with a 0.6 of balanced accuracy and a very good score.
+
+------------------------------> ETDRS <---------------------------------
+Selected variables are Index(['ETDRS_b', 'ETDRS_V4', 'ETDRS_12m'], dtype='object')
+When sorting by test balacc, the best configuration has a test balacc of 0.611150296064089          and a score of 0.3175080764398768
+When sorting by score, the best configuration has a test balacc of 0.5354565772669222          and a score of 0.5997019359448992
+Before -> ['0.5', '1', 'linear', 'balanced']
+After -> [0.5, 1, 'linear', 'balanced']
+Validation Balanced Accuracy in MaxTestBalacc is 0.5178893178893179
+Plotting MaxTestBalacc
+Generating Figure
+Before -> ['0.1', '0.5', '0.6', '1.0', '10', '0.1', '525', '0.0001', '0.0001']
+After -> [0.1, 0.5, 0.6, 1.0, 10, 0.1, 525, 0.0001, 0.0001]
+Validation Balanced Accuracy in MaxScore is 0.5601673101673101
+Plotting MaxScore
+Generating Figure
+
+------------------------> cristalin_ETDRS_SNPs <------------------------
+When sorting by test balacc, the best configuration has a test balacc of 0.6099863578311856          and a score of 0.4744541698522314
+When sorting by score, the best configuration has a test balacc of 0.5928784976198771          and a score of 0.6627378732104336
+Before -> ['5', '1.5', '0.6', '0.6', '10', '0.1', '762', '0.1', '0.1']
+After -> [5, 1.5, 0.6, 0.6, 10, 0.1, 762, 0.1, 0.1]
+Validation Balanced Accuracy in MaxTestBalacc is 0.5688545688545689
+Plotting MaxTestBalacc
+Generating Figure
+Before -> ['0.1', '0.5', '0.6', '1.0', '10', '0.1', '1000', '0.0001', '0.0001']
+After -> [0.1, 0.5, 0.6, 1.0, 10, 0.1, 1000, 0.0001, 0.0001]
+Validation Balanced Accuracy in MaxScore is 0.609009009009009 (MAXIMUM! AND WITH VERY GOOD SCORE!!)
+Plotting MaxScore
+Generating Figure
+
+---------------------------> foveolar_cristalin_ETDRS <--------------------
+When sorting by test balacc, the best configuration has a test balacc of 0.6051288749564612          and a score of 0.4833318650964431
+When sorting by score, the best configuration has a test balacc of 0.5690293742017879          and a score of 0.671122881524874
+Before -> ['5', '0.5', '1.0', '0.6', '10', '0.1', '525', '0.1', '0.1']
+After -> [5, 0.5, 1.0, 0.6, 10, 0.1, 525, 0.1, 0.1]
+Validation Balanced Accuracy in MaxTestBalacc is 0.5811454311454312
+Plotting MaxTestBalacc
+Generating Figure
+Before -> ['0.1', '0.5', '1.0', '1.0', '50', '0.1', '1000', '0.0001', '0.0001']
+After -> [0.1, 0.5, 1.0, 1.0, 50, 0.1, 1000, 0.0001, 0.0001]
+Validation Balanced Accuracy in MaxScore is 0.5983268983268983
+Plotting MaxScore
+Generating Figure
+
+
+####### -----------------------------------------> ATROPHY 36m <---------------------------- #######
+
+#---------------------------> liquids <--------------------#
+
+When sorting by test balacc, the best configuration has a test balacc of 0.5967732884399549          and a score of 0.36008231061143503
+When sorting by score, the best configuration has a test balacc of 0.5967732884399549          and a score of 0.36008231061143503
+Before -> ['0.1', '1', 'sigmoid', 'balanced']
+After -> [0.1, 1, 'sigmoid', 'balanced']
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+Validation Balanced Accuracy in MaxTestBalacc is 0.5
+Plotting MaxTestBalacc
+Before -> ['0.1', '1', 'sigmoid', 'balanced']
+After -> [0.1, 1, 'sigmoid', 'balanced']
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+No linear kernel, so no plot of feature importance
+Validation Balanced Accuracy in MaxScore is 0.5
+Plotting MaxScore
+
+#-----------------------> extravars_liquids_vascular <-------------------------#
+
+When sorting by test balacc, the best configuration has a test balacc of 0.5681283319304152          and a score of -0.3091816435502919
+When sorting by score, the best configuration has a test balacc of 0.5496510241301908          and a score of 0.6402792775907792
+Before -> ['0.1', '1.5', '1.0', '1.0', '10', '0.0001', '525', '0.0001', '0.0001']
+After -> [0.1, 1.5, 1.0, 1.0, 10, 0.0001, 525, 0.0001, 0.0001]
+Validation Balanced Accuracy in MaxTestBalacc is 0.4772727272727273
+Plotting MaxTestBalacc
+Generating Figure
+Before -> ['0.1', '0.5', '0.6', '1.0', '10', '0.1', '1000', '0.0001', '0.0001']
+After -> [0.1, 0.5, 0.6, 1.0, 10, 0.1, 1000, 0.0001, 0.0001]
+Validation Balanced Accuracy in MaxScore is 0.5660173160173161 (MAXIMUM SCORE!! WITH VERY GOOD SCORE!!)
+Plotting MaxScore
+Generating Figure
+
+##### -------------------------------> HEALTHY/ILL <------------------------ ######
+
+-----------------------------------> foveolar_ETDRS <----------------------------------------
+When sorting by test balacc, the best configuration has a test balacc of 0.6645502645502646          and a score of 0.4373203349689444
+When sorting by score, the best configuration has a test balacc of 0.6012896825396825          and a score of 0.8220853493752613
+Before -> ['287', 'auto', '30', '2', '5', 'False']
+After -> [287, 'auto', 30, 2, 5, True]
+Validation Balanced Accuracy in MaxTestBalacc is 0.6438307721982897
+Plotting MaxTestBalacc
+Generating Figure
+Before -> ['0.1', '0.5', '1.0', '1.0', '50', '0.1', '50', '0.0001', '0.0001']
+After -> [0.1, 0.5, 1.0, 1.0, 50, 0.1, 50, 0.0001, 0.0001]
+Validation Balanced Accuracy in MaxScore is 0.6210698900533659
+Plotting MaxScore
+Generating Figure
+
+--------------------------------------> foveolar_vascular_ETDRS_SNPs <---------------------------
+
+When sorting by test balacc, the best configuration has a test balacc of 0.6568783068783068          and a score of 0.4017401486324208
+When sorting by score, the best configuration has a test balacc of 0.6101190476190478          and a score of 0.8398569213130207
+Before -> ['5', '1.5', '1.0', '1.0', '10', '0.1', '50', '0.1', '0.0001']
+After -> [5, 1.5, 1.0, 1.0, 10, 0.1, 50, 0.1, 0.0001]
+Validation Balanced Accuracy in MaxTestBalacc is 0.6482350671896098 (**MAXIMUM!! WITH ACCEPTABLE SCORE**)
+Plotting MaxTestBalacc
+Generating Figure
+Before -> ['0.1', '0.5', '1.0', '1.0', '50', '0.1', '1000', '0.0001', '0.0001']
+After -> [0.1, 0.5, 1.0, 1.0, 50, 0.1, 1000, 0.0001, 0.0001]
+Validation Balanced Accuracy in MaxScore is 0.6129042628431813
+Plotting MaxScore
+Generating Figure
+
+
+###--------------------------------------------------> FIGURE 1 <------------------------------------------------------###
+
+##FEATURE IMPORTANCE FOR THE CHOSEN MODELS 
+    ## HEALTHY/ILL -> foveolar_vascular_ETDRS_SNPs -> xgboost -> 0.6482350671896098 -> MaxTestBalacc
+    ## ATROPHY_36m -> extravars_liquids_vascular -> xgboost -> 0.5660173160173161 -> MaxScore
+    ## FIBROSIS_36m -> cristalin_ETDRS_SNPs -> xgboost -> 0.609009009009009 -> MaxScore
