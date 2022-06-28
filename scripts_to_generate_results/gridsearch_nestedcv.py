@@ -49,32 +49,49 @@ print(f'Gridding over {WORKING_VAR}')
 N_SPLITS_INNER,N_SPLITS_OUTER=6,6
 
 #COMPUTE AREA UNDER THE ACURACCY CURVE AND REJECTION RATE CURVE
-def area_under_the_acuraccy_and_rejection_rate(real_np,probs):
-    #
-    aubc = []
-    aurj = []
-    #
+def computingAUAC_AURC(real_np, probs):
+
+    def selectMax(v):
+        probs = []
+
+        for zeroProb,onePro in v:
+            if zeroProb>onePro:
+                probs.append(0)
+            else:
+                probs.append(1)
+
+        return probs
+    
+    #INIT THE AREA UNDER THE BALANCED ACCURACY CURVE VECTOR
+    aubac = []
+
+    #INIT THE AREA UNDER THE REJECTION CURVE VECTOR
+    aurc = []
+
+    #Init number of samples and max probabilities
     n = real_np.shape[0]
     max_probs = np.max(probs,axis=1)
-    #
-    th_range = range(10,20,1)
-    for th in th_range:
+
+    for th in range(10,20,1):
+
+        #from 0.5 to 1
         dec_th = th/20
+
         #get index of true
-        ind = [i for i,x in enumerate(max_probs) if x>=dec_th or x<=(1-dec_th)]
-        #print(len(ind))
+        ind = [i for i,x in enumerate(max_probs) if x >= dec_th]
+
         if len(ind):
-            aubc.append(accuracy_score(real_np[ind],binarize(max_probs[ind][np.newaxis],threshold=0.5).flatten()))
-            aurj.append(1-(len(ind)/n))
+            aubac.append(accuracy_score(real_np[ind], selectMax(probs[ind])))
+            aurc.append(1-(len(ind)/n))
         else:
-            aubc.append(0)
-            aurj.append(1)
+            aubac.append(0)
+            aurc.append(1)
 
-    #or 1/10
-    aubc_c = 2*np.sum((1/20)*np.array(aubc))
-    aurj_c = 2*np.sum((1/20)*np.array(aurj))
+    #Average
+    aubacAvg = np.mean(aubac)
+    aurcAvg = np.mean(aurc)
 
-    return aubc_c,aurj_c
+    return aubacAvg, aurcAvg
 
 #RUN FROM oftal_gridding DIRECTORY
 def load_data(drop_previous_ill=True, drop_extravars=False, drop_liquids=False,
