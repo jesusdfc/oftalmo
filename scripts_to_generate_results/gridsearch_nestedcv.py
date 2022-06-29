@@ -62,8 +62,8 @@ def computingAUAC_AURC(real_np, probs):
 
         return probs
     
-    #INIT THE AREA UNDER THE BALANCED ACCURACY CURVE VECTOR
-    aubac = []
+    #INIT THE AREA UNDER THE ACCURACY CURVE VECTOR
+    auac = []
 
     #INIT THE AREA UNDER THE REJECTION CURVE VECTOR
     aurc = []
@@ -81,17 +81,17 @@ def computingAUAC_AURC(real_np, probs):
         ind = [i for i,x in enumerate(max_probs) if x >= dec_th]
 
         if len(ind):
-            aubac.append(accuracy_score(real_np[ind], selectMax(probs[ind])))
+            auac.append(accuracy_score(real_np[ind], selectMax(probs[ind])))
             aurc.append(1-(len(ind)/n))
         else:
-            aubac.append(0)
+            auac.append(0)
             aurc.append(1)
 
-    #Average
-    aubacAvg = np.mean(aubac)
-    aurcAvg = np.mean(aurc)
+    #Compute Area
+    auacArea = np.mean(auac)
+    aurcArea = np.mean(aurc)
 
-    return aubacAvg, aurcAvg
+    return auacArea, aurcArea
 
 #RUN FROM oftal_gridding DIRECTORY
 def load_data(drop_previous_ill=True, drop_extravars=False, drop_liquids=False,
@@ -168,26 +168,6 @@ def load_data(drop_previous_ill=True, drop_extravars=False, drop_liquids=False,
 
 def nested_gridsearch(X,y,model_type='rf'):
 
-    #Evaluate Confmatrix
-    def evaluate_confmatrix(val_y,val_pred):
-    
-        argmax_pred = np.array(list(map(np.argmax,val_pred)))
-        max_pred = np.array(list(map(max,val_pred)))
-
-        bal_acc_score = []
-
-        th_range = range(10,20,1)
-        for th in th_range:
-            dec_th = th/20
-            #get index of true
-            ind = [i for i,x in enumerate(max_pred) if x>=dec_th or x<=(1-dec_th)]
-            if len(ind):
-                bal_acc_score.append([dec_th,accuracy_score(val_y[ind],argmax_pred[ind])])
-            else:
-                bal_acc_score.append([dec_th,0])
-    
-        return bal_acc_score
-
     #Choose the model
     def choose_model(model_type):
 
@@ -234,6 +214,19 @@ def nested_gridsearch(X,y,model_type='rf'):
 
             return p(min_child_weight, gamma, subsample, colsample_bytree, max_depth, learning_rate, n_estimators, reg_alpha, reg_lambda)
 
+    #Select Max
+    def selectMax(v):
+        probs = []
+
+        for zeroProb,onePro in v:
+            if zeroProb>onePro:
+                probs.append(0)
+            else:
+                probs.append(1)
+
+        return probs
+    
+
     #SPlit and KFOLD
     n_splits_inner,n_splits_outer=N_SPLITS_INNER,N_SPLITS_OUTER
     inner_cv = StratifiedKFold(n_splits=n_splits_inner, shuffle=True, random_state=42)
@@ -262,75 +255,81 @@ def nested_gridsearch(X,y,model_type='rf'):
                                             learning_rate=comb[5], n_estimators=comb[6], reg_alpha=comb[7], reg_lambda=comb[8],
                                             random_state = 1)
 
-        #Create dict
-        outer_list = dict()
-        val_y = list()
-        val_pred = list()
-        val_pred_proba = list()
-        inner_list_ba = list()
-        inner_list_ar = list()
-        inner_list_ba_train = list()
-        test_y = list()
-        test_pred_proba = list()
-        #
+        ## TEST ARRAYS
+        test_real = []
+        test_pred = []
+        test_pred_prob = []
+        test_bac = []
+    
+        ## -------------------- OUTER LOOP, TRAIN AND TEST ---------------------
         for train_index_outer, test_index_outer in outer_cv.split(X,y):
-            #
+
+            #Get train and test
             X_outer_train, X_outer_test = X.iloc[train_index_outer,:].to_numpy(), X.iloc[test_index_outer,:].to_numpy()
             y_outer_train, y_outer_test = y[train_index_outer].to_numpy(), y[test_index_outer].to_numpy()
-            #Compute outer balanced accuracy and confusion matrix (Validation)
-            val_y.append(y_outer_test)
+
+            #Append the TEST
+            test_real.append(y_outer_test)
 
             #save model outer
             model_outer = copy.deepcopy(model_orig)
 
+            #Fit the model
             _ = model_outer.fit(X_outer_train,y_outer_train)
 
-            val_pred.append(model_outer.predict(X_outer_test))
-            val_pred_proba.append(model_outer.predict_proba(X_outer_test))
-            #
-            for train_index_inner, test_index_inner in inner_cv.split(X_outer_train,y_outer_train):
-                #
-                #combination
-                model_inner = copy.deepcopy(model_orig)
-                #
-                X_inner_train, X_inner_test = X_outer_train[train_index_inner,:], X_outer_train[test_index_inner,:]
-                y_inner_train, y_inner_test = y_outer_train[train_index_inner], y_outer_train[test_index_inner]
+            #Predict the test, and predict the probabilities also
+            test_pred_prob.append(model_outer.predict_proba(X_outer_test))
+            test_pred.append(selectMax(test_pred_prob[-1]))
 
-                #
+            #BALANCED ACCURACY TEST
+            test_bac.append(balanced_accuracy_score(np.hstack(test_real), np.hstack(test_pred)))
+
+            ## VALIDATION ARRAYS
+            val_real = []
+            val_auac = []
+            val_aurc = []
+            val_bac = []
+            val_auroc = []
+
+            ## TRAIN ARRAYS
+            train_bac = []
+            train_auroc = []
+
+            ## -------------------- INNER LOOP, TRAIN AND VALIDATION ---------------------
+            for train_index_inner, test_index_inner in inner_cv.split(X_outer_train,y_outer_train):
+    
+                #Get the model
+                model_inner = copy.deepcopy(model_orig)
+
+                #Get Train and Validation
+                X_inner_train, X_inner_validation = X_outer_train[train_index_inner,:], X_outer_train[test_index_inner,:]
+                y_inner_train, y_inner_validation = y_outer_train[train_index_inner], y_outer_train[test_index_inner]
+
+                #APPEND THE VALIDATION
+                val_real.append(y_inner_validation)
+
+                #Fit the model
                 _ = model_inner.fit(X_inner_train,y_inner_train)
 
-                #
-                test_y.append(y_inner_test)
-                test_pred_proba.append(model_inner.predict_proba(X_inner_test))
-
                 #AREA UNDER THE ACCURACY AND REJECTION RATE CURVE
-                inner_list_ar.append(area_under_the_acuraccy_and_rejection_rate(y_inner_test,model_inner.predict_proba(X_inner_test)))
-                #AREA UNDER THE BALANCED ACCURACY (TEST)
-                inner_list_ba.append(balanced_accuracy_score(y_inner_test,model_inner.predict(X_inner_test)))
-                #AREA UNDER THE BALANCED ACCURACY (TRAIN)
-                inner_list_ba_train.append(balanced_accuracy_score(y_inner_train,model_inner.predict(X_inner_train)))
-        
-        #evaluate the conf matrix of the validation
-        val_bal_acc_score = evaluate_confmatrix(np.hstack(val_y),np.vstack(np.array(val_pred_proba)))
-        test_bal_acc_score = evaluate_confmatrix(np.hstack(test_y),np.vstack(np.array(test_pred_proba)))
+                auacArea, aurcArea = computingAUAC_AURC(y_inner_validation,model_inner.predict_proba(X_inner_validation))
+                val_auac.append(auacArea)
+                val_aurc.append(aurcArea)
 
-        #Fill the outer  dict
-        outer_list['test_balacc'] = np.mean(inner_list_ba)
-        outer_list['train_balacc'] = np.mean(inner_list_ba_train)
-        outer_list['test_area_acc'] = np.mean(list(map(lambda x: x[0],inner_list_ar)))
-        outer_list['test_area_reject_rate'] = np.mean(list(map(lambda x: x[1],inner_list_ar)))
-        outer_list['val_balacc'] = balanced_accuracy_score(np.hstack(val_y),np.hstack(val_pred))
+                #AREA UNDER THE ROC CURVE
+                val_auroc.append(roc_auc_score(y_inner_validation,model_inner.predict_proba(X_inner_validation)[:,1]))
+                train_auroc.append(roc_auc_score(y_inner_train,model_inner.predict_proba(X_inner_train)[:,1]))
 
-        #fill the outerlist
-        for x in val_bal_acc_score[1:]:
-            outer_list['val_acc_th_'+str(x[0])] = x[1]
+                #BALANCED ACCURACY (TRAIN and VALIDATION)
+                val_bac.append(balanced_accuracy_score(y_inner_validation,model_inner.predict(X_inner_validation)))
+                train_bac.append(balanced_accuracy_score(y_inner_train,model_inner.predict(X_inner_train)))
 
-        #fill the innerlist
-        for x in test_bal_acc_score[1:]:
-            outer_list['test_acc_th_'+str(x[0])] = x[1]
+        results_row = [np.mean(train_bac), np.mean(val_bac), np.mean(test_bac), 
+                       np.mean(val_auac), np.mean(val_aurc), np.mean(val_auroc), 
+                       np.mean(train_auroc), '_'.join(list(map(str,comb)))]
 
         #Make dataframe
-        comb_df = pd.DataFrame(outer_list, index=['_'.join(list(map(str,comb)))])
+        comb_df = pd.DataFrame(results_row, index= ['Train BalAcc', 'Val BalAcc',' Test BalAcc',' Val AUAC', 'Val AURC', 'Val AUROC', 'Train AUROC','Comb']).T
 
         #concat
         results_df = pd.concat((results_df,comb_df))
