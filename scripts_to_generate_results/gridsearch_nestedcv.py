@@ -338,44 +338,44 @@ def nested_gridsearch(X,y,model_type='rf'):
 
 ##----------------------DATA-----------------------##
 def dataset_comb_computation(extravars,liquids,foveolar_vars,vascular_vars,cristalin_vars,ETDRs_vars,SNPs_vars):
+    #
+    #extravars,liquids,foveolar_vars,vascular_vars,cristalin_vars,ETDRs_vars = comb_v
+    #
+    save_p = '_'.join([x+'_'+str(y) for x,y in zip(['extravars','liquids','foveolar','vascular','cristalin','ETDRS','SNPs'],
+                                                    [extravars,liquids,foveolar_vars,vascular_vars,cristalin_vars,ETDRs_vars,SNPs_vars])])
+    #print(extravars,liquids,foveolar_vars,ETDRs_vars)
+    #
+    X,y = load_data(drop_extravars = extravars, drop_liquids = liquids,
+            drop_foveolar = foveolar_vars, drop_vascular = vascular_vars, drop_cristalin = cristalin_vars,
+            drop_ETDRS = ETDRs_vars,drop_SNPs = SNPs_vars, y_var = WORKING_VAR)
+    #check if it exists
+    if not os.path.isfile(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/rf/'+save_p+'.pickle'):
+        print('rf')
+        #Do the RF grid
+        best_params_rf = nested_gridsearch(X,y,model_type='rf')
         #
-        #extravars,liquids,foveolar_vars,vascular_vars,cristalin_vars,ETDRs_vars = comb_v
+        #RF
+        with open(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/rf/'+save_p+'.pickle', 'wb') as handle:
+            pickle.dump(best_params_rf, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    #
+    
+    if not os.path.isfile(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/xgboost/'+save_p+'.pickle'):
+        print('xgb')
+        #Do the XGB grid
+        best_params_xgb = nested_gridsearch(X,y,model_type='xgb')
         #
-        save_p = '_'.join([x+'_'+str(y) for x,y in zip(['extravars','liquids','foveolar','vascular','cristalin','ETDRS','SNPs'],
-                                                        [extravars,liquids,foveolar_vars,vascular_vars,cristalin_vars,ETDRs_vars,SNPs_vars])])
-        #print(extravars,liquids,foveolar_vars,ETDRs_vars)
+        #XGB
+        with open(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/xgboost/'+save_p+'.pickle', 'wb') as handle:
+            pickle.dump(best_params_xgb, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    #
+    if not os.path.isfile(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/svm/'+save_p+'.pickle'):
+        print('svm')
+        #Do the SVM grid
+        best_params_svm = nested_gridsearch(X,y,model_type='svm')
         #
-        X,y = load_data(drop_extravars=extravars,drop_liquids=liquids,
-              drop_foveolar=foveolar_vars,drop_vascular=vascular_vars,drop_cristalin=cristalin_vars,
-              drop_ETDRS = ETDRs_vars,drop_SNPs = SNPs_vars, y_var=WORKING_VAR)
-        #check if it exists
-        if not os.path.isfile(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/rf/'+save_p+'.pickle'):
-            print('rf')
-            #Do the RF grid
-            best_params_rf = nested_gridsearch(X,y,model_type='rf')
-            #
-            #RF
-            with open(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/rf/'+save_p+'.pickle', 'wb') as handle:
-                pickle.dump(best_params_rf, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        #
-        
-        if not os.path.isfile(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/xgboost/'+save_p+'.pickle'):
-            print('xgb')
-            #Do the XGB grid
-            best_params_xgb = nested_gridsearch(X,y,model_type='xgb')
-            #
-            #XGB
-            with open(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/xgboost/'+save_p+'.pickle', 'wb') as handle:
-                pickle.dump(best_params_xgb, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        #
-        if not os.path.isfile(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/svm/'+save_p+'.pickle'):
-            print('svm')
-            #Do the SVM grid
-            best_params_svm = nested_gridsearch(X,y,model_type='svm')
-            #
-            #SVM
-            with open(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/svm/'+save_p+'.pickle', 'wb') as handle:
-                pickle.dump(best_params_svm, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        #SVM
+        with open(os.getcwd()+f'/outputs/nested_cv_{N_SPLITS_INNER}_{N_SPLITS_OUTER}/{WORKING_VAR}/svm/'+save_p+'.pickle', 'wb') as handle:
+            pickle.dump(best_params_svm, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 def grid_models_data():
     #
